@@ -8,6 +8,12 @@ The client acts as an example of how to use the client side API to the [O4-serve
 
 You may use the classes in the `oy.tol.chat` package in implementing your GUI client in Java. You may also use the `ChatTCPClient` implementation to connect to and use the chat server.
 
+> **Important note**: If you implement the GUI with Java, use the classes mentioned above but **do not** use the event loop in `ChatClient.run` or anything similar in your GUI code!
+>
+> Why? Java GUI frameworks, Swing for example, *already have an event loop* handling events from buttons, menus and such. You shoud **not** have your own event loop here. This app class `ChatClient` here is *just an example* -- a **console app** example -- on how to use the classes you are allowed to use. Basically you could do this without the `ChatClient` class, having your *own* class implementing the GUI.
+>
+> Your app should instantiate the necessary GUI elements, and start the `ChatTCPClient` object handling network operations, and then 1. react to GUI events by calling `ChatTCPClient` methods (when necessary) and 2. handle the network events in your implementation of interface `ChatClientDataProvider`. `ChatTCPClient` calls those interface methods when necessary. So, no custom event loop needed in a GUI app. If you do not understand this, you should revisit the course materials and basics of how GUI frameworks handle user events.
+
 If you wish to implement a client with a different programming language, you can do that. The server API uses TCP for connecting and sending / receiving. Payload is JSON, so it is possible to use *any* programming language to implement different kinds of clients. See the 04-server for details on JSON message structures.
 
 The O4-server is a chat server with the following main properties:
