@@ -35,7 +35,8 @@ public class MessageFactory {
 
 			case Message.JOIN_CHANNEL: {
 				String channel = jsonObject.getString("channel");
-				message = new JoinMessage(channel);
+				String nick = jsonObject.getString("nick");
+				message = new JoinMessage(channel, nick);
 				break; 
 			}
 

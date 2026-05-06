@@ -72,6 +72,7 @@ public class ChatTCPClient implements Runnable {
 			try {
 				if (socket == null) {
 					connect();
+					changeChannelTo("main");
 				}
 				String data;
 				while ((data = in.readLine()) != null) {
@@ -136,7 +137,7 @@ public class ChatTCPClient implements Runnable {
 	}
 
 	public void changeChannelTo(String channel) {
-		JoinMessage msg = new JoinMessage(channel);
+		JoinMessage msg = new JoinMessage(channel, dataProvider.getNick());
 		String jsonObjectString = msg.toJSON();
 		write(jsonObjectString);
 	}

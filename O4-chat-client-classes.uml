@@ -32,6 +32,7 @@ package oy.tol.chatclient {
     }
     class JoinMessage {
       -channel: String
+      -nick: String
     }
     ChatMessage --|> Message 
     ChangeTopicMessage --|> Message 
@@ -62,4 +63,3 @@ ChatClient ..> Message
 note "Communicates with ChatServer" as N1
 N1 .. ChatTCPClient
 @enduml
-
