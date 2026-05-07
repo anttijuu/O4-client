@@ -18,12 +18,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import com.diogonunes.jcolor.Ansi;
 import com.diogonunes.jcolor.Attribute;
 
-import oy.tol.chat.ChangeTopicMessage;
-import oy.tol.chat.ChatMessage;
-import oy.tol.chat.ErrorMessage;
-import oy.tol.chat.ListChannelsMessage;
-import oy.tol.chat.Message;
-import oy.tol.chat.StatusMessage;
+import oy.tol.chat.*;
 
 /**
  * ChatClient is the console based UI for the ChatServer. It profides the
@@ -199,7 +194,6 @@ public class ChatClient implements ChatClientDataProvider {
 		}
 		if (newChannel.length() > 0) {
 			tcpClient.changeChannelTo(newChannel);	
-			currentChannel = newChannel;
 		}
 	}
 
@@ -356,6 +350,15 @@ public class ChatClient implements ChatClientDataProvider {
 					} else {
 						printPrompt(msg.getSent(), msg.getNick(), msg.getMessage(), colorOtherNick);
 					}
+				}
+				break;
+			}
+
+			case Message.JOIN_CHANNEL: {
+				if (message instanceof JoinMessage) {
+					JoinMessage joinMessage = (JoinMessage)message;
+					currentChannel = joinMessage.getChannel();
+					printPrompt(LocalDateTime.now(), "SERVER", "channel is now: " + currentChannel, colorInfo);
 				}
 				break;
 			}

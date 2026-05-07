@@ -35,18 +35,22 @@ The O4-server is a chat server with the following features:
   * Server always has the "main" channel to join, which can be used by the clients as default. 
   * Client provides the channel name and the user nick name in the join message. 
 * There is no authentication of users, just connect and start chatting.
-* User nick's are not (unfortunately) verified; several users can thus have the same nick. This may cause issues. Feel
+* User nick's are not (unfortunately) verified; several users could thus have the same nick. This may cause issues. Feel
   free to improve the server.
 * The chat messages are not saved nor buffered on the server side, so you cannot view old messages, sent before the
   client connected.
 * The server supports chat *channels* you can join. Only clients on the same channel can view messages sent to the
   channel.
-* When user leaves or joins a channel, message is sent to other users in that channel about this.  
+* When user leaves or joins a channel, message is sent to other users in that channel about this.
 * Each channel can have a topic any user may change.
+* When a client joins the channel, server sends 
+  * the join message back to the client, as well as 
+  * the topic of the channel, and also
+  * a status message with a list of users currently on the channel.
 * You can reply to a specific chat message. How this is done, is client implementation specific. This console client
   does not support this, at the moment.
-* You can send *private messages* to a specific user using their nick. Note that the user must send at least one
-  message; otherwise the server does not know the nick of the user and cannot forward any private messages to the user.
+* You can send *private messages* to a specific user using their nick, if you know it. Private messages can be
+  sent even if the users are on different channels. 
 * You can join a server side bot channel if server is configured to have one. A bot channel reads messages from a text
   file and posts those periodically to the channel. This can be used to test clients and how they are able to receive
   messages from the server.
@@ -74,7 +78,8 @@ The client app is structured as described in this high level UML class diagram:
 * `ChatMessage`s are the actual chat messages users sent to and received from the server to talk with each others.
 * `ChangeTopicMessage` is used to request channel topic change as well as received by the client when the channel topic
   changes.
-* `JoinMessage` is used by the client when it wants to join an existing channel or open a new channel.
+* `JoinMessage` is used by the client when it wants to join an existing channel or open a new channel. Server replies
+  with a confirmation `JoinMessage` when the user has been switched to the reuested channel.  
 * `ListChannelsMessage` can be sent by the client when user wishes to view available channels. It is also sent by the
   server as a reply, containing the currently open channels.
 * `StatusMessage` is a message server can use to tell clients about interesting events happening in the server.
