@@ -76,8 +76,8 @@ public class ChatTCPClient implements Runnable {
 				String data;
 				while ((data = in.readLine()) != null) {
 					// ChatClient.println("DEBUG IN: " + data, ChatClient.colorInfo);
-					boolean continueReading = handleMessage(data);
-					if (!continueReading) {
+					handleMessage(data);
+					if (!running) {
 						break;
 					}
 				}
@@ -105,7 +105,7 @@ public class ChatTCPClient implements Runnable {
 		// ChatClient.println("Connecting to server " + address, ChatClient.colorError);
 	}
 
-	private boolean handleMessage(String data) {
+	private void handleMessage(String data) {
 		Message received = null;
 		try {
 			JSONObject jsonObject = new JSONObject(data);
@@ -114,7 +114,7 @@ public class ChatTCPClient implements Runnable {
 			e.printStackTrace();
 			received = new ErrorMessage("Invalid JSON message from client");
 		}
-		return dataProvider.handleReceived(received);
+		dataProvider.handleReceived(received);
 	}
 
 	public void close() {

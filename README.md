@@ -90,19 +90,79 @@ The client app is structured as described in this high level UML class diagram:
   `ChatClientDataProvider`. When the TCP client needs the settings (nick, server address, etc.), it asks these from the
   client using this interface the `ChatClient` implements.
 
-Important things to be aware of:
+## Using the ChatTCPClient in a Swing app
 
-* **Note 1**: Not all details of the implementation are visible in this diagram.
-* **Note 2**: The `ChatTCPClient` **must be executed in a thread**. `ChatTCPClient` calls *blocking* network functions
+**Important things** to be aware of:
+
+* **Note 1**: The `ChatTCPClient` **must be executed in a thread**. `ChatTCPClient` calls *blocking* network functions
   to read and send data over the TCP socket. If you run the `ChatTCPClient` on the main thread of the application, this
-  effectively blocks the GUI of the application. For an example on how to do this, see lines 99-100 in
-  `ChatClient.java`.
-* **Note 3**: If you want to have several *separate* sessions to a server (e.g. using a different nick), or separate
+  effectively blocks the GUI of the application. For an example on how to do this, see how in `ChatClient.java` the
+  client launches the TCP client in a separate thred.
+* **Note 2**: If you want to have several *separate* sessions to a server (e.g. using a different nick), or separate
   sessions to *different* servers, just create one `ChatTCPClient` for each of these connections. You will most probably
   also want to have different implementations of `ChatClientDataProvider` interface for these `ChatTCPClient` instances.
-* **Note 4**: This command line client *does not support* the reply-to chat messages. UI does not provide any means to
+* **Note 3**: This command line client *does not support* the reply-to chat messages. UI does not provide any means to
   reply to a specific previous received message. Nor does the UI show if an incoming message is a reply to a previous
   sent or received message.
+
+In a GUI app you implement, you could support several sessions to different servers, as well as the reply-to feature
+the server supports, but the CLI client does not.
+
+Since the `ChatTCPClient` is executed in a separate **thread**, this can cause issues when using the class in a 
+Java/Swing app. If the server sends messages very fast, this command line implementation of `ChatTCPClient` 
+causes issues:
+
+```Java
+	private void handleMessage(String data) {
+		Message received = null;
+		try {
+			JSONObject jsonObject = new JSONObject(data);
+			received = MessageFactory.fromJSON(jsonObject);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			received = new ErrorMessage("Invalid JSON message from client");
+		}
+		dataProvider.handleReceived(received);
+	}
+```
+
+Here `dataProvider` is the client application handling the received messages. In a Swing GUI app, this
+can cause **concurrent modification errors**. This happens when data structures and GUI elements are used concurrently, 
+if the previous message from the server is still being handled by the `dataProvider`, when another new message arrives
+from the server. Or the user does something with the GUI exactly at the same time a message from the server is
+handled. 
+
+In these situations, two or more messages are handled in separate threads, and this is not good at all, and you would see
+`java.util.ConcurrentModificationException`s  thrown.
+
+To avoid this, you must in a Swing app **change** this `ChatTCPClient` implementation so that the event is placed 
+in the Swing **event handling queue** using `SwingUtilities.invokeLater` The Swing docs says:
+
+> "This method should be used when an application thread needs to update the GUI. "
+
+And here we *do* have an application thread, in `ChatTCPClient`, that wants to update the GUI!
+
+Now, the messages are handled not concurrently, but one at a time by the `dataProvider`:
+
+```Java
+	private void handleMessage(String data) {
+		Message received = null;
+		try {
+			JSONObject jsonObject = new JSONObject(data);
+			received = MessageFactory.fromJSON(jsonObject);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			received = new ErrorMessage("Invalid JSON message from client");
+		}
+		final Message receivedFinal = received;
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				dataProvider.handleReceived(receivedFinal);
+			}
+		});
+	}
+```
 
 ## Building the client
 

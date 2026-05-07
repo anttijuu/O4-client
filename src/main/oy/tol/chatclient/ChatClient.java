@@ -339,8 +339,7 @@ public class ChatClient implements ChatClientDataProvider {
 	}
 
 	@Override
-	public boolean handleReceived(Message message) {
-		boolean continueReceiving = true;
+	public void handleReceived(Message message) {
 		switch (message.getType()) {
 			case Message.CHAT_MESSAGE: {
 				if (message instanceof ChatMessage) {
@@ -388,7 +387,6 @@ public class ChatClient implements ChatClientDataProvider {
 				ErrorMessage msg = (ErrorMessage)message;
 				printPrompt(LocalDateTime.now(), "SERVER", msg.getError(), colorError);
 				if (msg.requiresClientShutdown()) {
-					continueReceiving = false;
 					running = false;
 					println("\nPress enter", colorError);
 				}
@@ -400,7 +398,6 @@ public class ChatClient implements ChatClientDataProvider {
 				break;
 		}
 		printPrompt(LocalDateTime.now(), nick, "", colorMsg);
-		return continueReceiving;
 	}
 
 	@Override
