@@ -72,7 +72,6 @@ public class ChatTCPClient implements Runnable {
 			try {
 				if (socket == null) {
 					connect();
-					changeChannelTo("main");
 				}
 				String data;
 				while ((data = in.readLine()) != null) {

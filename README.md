@@ -28,10 +28,11 @@ If you wish to implement a client with a different programming language, you can
 connecting and sending / receiving. Payload is JSON, so it is possible to use *any* programming language to implement
 different kinds of clients. See the 04-server for details on JSON message structures.
 
-The O4-server is a chat server with the following main features:
+The O4-server is a chat server with the following features:
 
 * Clients connect to the server using a TCP socket.
-* Client sends a join channel message `JoinMessage` to join the "main" channel.
+* Client sends a join channel message `JoinMessage` to join a channel.
+  * Server always has the "main" channel to join, which can be used by the clients as default. 
   * Client provides the channel name and the user nick name in the join message. 
 * There is no authentication of users, just connect and start chatting.
 * User nick's are not (unfortunately) verified; several users can thus have the same nick. This may cause issues. Feel

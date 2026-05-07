@@ -90,7 +90,7 @@ public class ChatClient implements ChatClientDataProvider {
 	 * Runs the show: - Creates the http client - displays the menu - handles
 	 * commands until user enters command /exit.
 	 */
-	public void run(String configFile) throws IOException {
+	public void run(String configFile) throws IOException, InterruptedException {
 		println("Reading configuration...", colorInfo);
 		readConfiguration(configFile);
 		if (null == nick) {
@@ -98,6 +98,15 @@ public class ChatClient implements ChatClientDataProvider {
 		}
 		tcpClient = new ChatTCPClient(this);
 		new Thread(tcpClient).start();
+		// Wait for a while to the thread to get connected to the server.
+		// If that would be done immediately in a console app, connection
+		// has not necessarily been set up and sending the channel change
+		// message would fail. Sending the join channel message could be
+		// done immediately after calling connect() in ChatTCPClient, but
+		// that would hard code the first channel to join in the TCP client.
+		// Better let the client _app_ to decide which channel to join first.
+		Thread.sleep(100);
+		tcpClient.changeChannelTo("main");
 		printCommands();
 		printInfo();
 		Console console = System.console();
