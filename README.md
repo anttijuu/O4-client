@@ -101,10 +101,15 @@ The client app is structured as described in this high level UML class diagram:
 * **Note 2**: If you want to have several *separate* sessions to a server (e.g. using a different nick), or separate
   sessions to *different* servers, just create one `ChatTCPClient` for each of these connections. You will most probably
   also want to have different implementations of `ChatClientDataProvider` interface for these `ChatTCPClient` instances.
-* **Note 3**: This command line client *does not support* the reply-to chat messages. UI does not provide any means to
+* **Note 3**: GUI client should be able to handle connection errors gracefully. The server may not be running or
+  reachable when the GUI client starts and tries to connect. The server may shut down (gracefully or not) after
+  successful connection or network can break down. In all these situations, the GUI app must not crash or behave
+  erratically. GUI app should show there are connection issues and provide a way for the user to try to reconnect.
+  Also, the GUI app should provide a way for the user to edit the settings for the app.
+* **Note 4**: This command line client *does not support* the reply-to chat messages. UI does not provide any means to
   reply to a specific previous received message. Nor does the UI show if an incoming message is a reply to a previous
   sent or received message.
-
+  
 In a GUI app you implement, you could support several sessions to different servers, as well as the reply-to feature
 the server supports, but the CLI client does not.
 
