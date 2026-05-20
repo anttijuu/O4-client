@@ -14,8 +14,7 @@ You may use the classes in the `oy.tol.chat` package in implementing your GUI cl
 > loop in `ChatClient.run` or anything similar in your GUI code!
 >
 > Why? Java GUI frameworks, Swing for example, *already have an event loop* handling events from buttons, menus and
-> such. You shoud **not** have your own event loop here. This app class `ChatClient` here is *just an example* -- a *
-*console app** example -- on how to use the classes you are allowed to use. Basically you could do this without the
+> such. You shoud **not** have your own event loop here. This app class `ChatClient` here is *just an example* -- a **console app** example -- on how to use the classes you are allowed to use. Basically you could do this without the
 `ChatClient` class, having your *own* class implementing the GUI.
 >
 > Your app should instantiate the necessary GUI elements, and start the `ChatTCPClient` object handling network
